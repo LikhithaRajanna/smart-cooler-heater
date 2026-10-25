@@ -125,3 +125,23 @@ Engineering major project integrating pre-trained FaceNet-based face recognition
 ## Contributors
 
 Engineering Major Project
+
+
+## Project Screenshots
+
+![Home Page](screenshots/home-page.png)
+### Home Page<img width="1600" height="766" alt="Home Page" src="https://github.com/user-attachments/assets/f6c0aa55-3074-40b1-8cf9-33b1af49caeb" />
+
+### Face Recognition
+![Face Recognition](screenshots/face-recognition.png)
+<img width="1581" height="743" alt="Face Recognition" src="https://github.com/user-attachments/assets/e3c92208-1bd0-447c-8053-2ff364790c48" />
+
+
+### User Registration
+![User Registration](screenshots/user-registration.png)
+<img width="1600" height="763" alt="User Registration" src="https://github.com/user-attachments/assets/ef76f8a9-f123-456a-bd65-d7a362c01149" />
+
+
+### Hardware Prototype
+![Hardware Prototype](screenshots/hardware-prototype.jpg)
+<img width="1280" height="960" alt="Hardware Prototype png" src="https://github.com/user-attachments/assets/af9cda24-f558-4538-9a62-a5b6e842025a" />
