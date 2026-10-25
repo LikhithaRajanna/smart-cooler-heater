@@ -1,0 +1,8 @@
+__pycache__/
+20170512-110547/
+UART drivers/
+*.npy
+*.wav
+*.zip
+*.db
+*.exe

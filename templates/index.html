@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Recognition System</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --transition-speed: 0.3s;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f9f9f9;
+            overflow-x: hidden;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .navbar.scrolled {
+            padding: 0.5rem 2rem;
+            background-color: rgba(44, 62, 80, 0.95);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .logo i {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-left: 2rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            transition: all var(--transition-speed) ease;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+        }
+
+        .nav-links a:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .nav-links i {
+            margin-right: 8px;
+            font-size: 1.1rem;
+        }
+
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        /* Hero Carousel */
+        .hero {
+            margin-top: 70px;
+            position: relative;
+            height: 80vh;
+            overflow: hidden;
+        }
+
+        .carousel {
+            position: relative;
+            height: 100%;
+            width: 100%;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            padding: 0 20%;
+        }
+
+        .slide.active {
+            opacity: 1;
+        }
+
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+
+        .slide-content {
+            position: relative;
+            z-index: 1;
+            transform: translateY(20px);
+            transition: transform 0.5s ease;
+        }
+
+        .slide.active .slide-content {
+            transform: translateY(0);
+        }
+
+        .slide h2 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .slide p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all var(--transition-speed) ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .carousel-nav {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            z-index: 10;
+        }
+
+        .carousel-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.5);
+            margin: 0 5px;
+            cursor: pointer;
+            transition: background-color var(--transition-speed) ease;
+        }
+
+        .carousel-indicator.active {
+            background-color: white;
+        }
+
+        /* About Section */
+        .about {
+            padding: 5rem 10%;
+            background-color: white;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            color: var(--secondary-color);
+            display: inline-block;
+        }
+
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            width: 70px;
+            height: 4px;
+            background-color: var(--primary-color);
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .about-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .about-text {
+            flex: 1;
+            min-width: 300px;
+            padding-right: 2rem;
+            animation: fadeInLeft 1s ease;
+        }
+
+        .about-image {
+            flex: 1;
+            min-width: 300px;
+            text-align: center;
+            animation: fadeInRight 1s ease;
+        }
+
+        .about-image img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform var(--transition-speed) ease;
+        }
+
+        .about-image img:hover {
+            transform: scale(1.05);
+        }
+
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+
+        .feature {
+            flex: 1;
+            min-width: 250px;
+            margin: 1rem;
+            padding: 1.5rem;
+            background-color: var(--light-color);
+            border-radius: 8px;
+            text-align: center;
+            transition: all var(--transition-speed) ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .feature:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature i {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .feature h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: var(--secondary-color);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--secondary-color);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        /* Animations */
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .slide h2 {
+                font-size: 2.5rem;
+            }
+
+            .slide p {
+                font-size: 1rem;
+            }
+
+            .about-content {
+                flex-direction: column;
+            }
+
+            .about-text {
+                padding-right: 0;
+                margin-bottom: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: block;
+            }
+
+            .nav-links {
+                position: absolute;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background-color: var(--secondary-color);
+                flex-direction: column;
+                align-items: center;
+                padding: 1rem 0;
+                clip-path: circle(0px at 90% -10%);
+                transition: all 0.5s ease-out;
+            }
+
+            .nav-links.active {
+                clip-path: circle(1000px at 90% -10%);
+            }
+
+            .nav-links li {
+                margin: 1rem 0;
+            }
+
+            .slide {
+                padding: 0 10%;
+            }
+
+            .slide h2 {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .navbar {
+                padding: 1rem;
+            }
+
+            .logo {
+                font-size: 1.2rem;
+            }
+
+            .slide {
+                padding: 0 5%;
+            }
+
+            .slide h2 {
+                font-size: 1.8rem;
+            }
+
+            .btn {
+                padding: 0.6rem 1.2rem;
+            }
+
+            .section-title h2 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-user-shield"></i>
+            <span>RecognitionPro</span>
+        </div>
+        <div class="hamburger">
+            <i class="fas fa-bars"></i>
+        </div>
+        <ul class="nav-links">
+            <li><a href="/"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="/adduser"><i class="fas fa-user-plus"></i> Add User</a></li>
+            <li><a href="/recognition"><i class="fas fa-camera"></i> Face Recognition</a></li>
+            <li><a href="/history"><i class="fas fa-history"></i> History</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Carousel -->
+    <section class="hero">
+        <div class="carousel">
+            <!-- Slide 1 -->
+            <div class="slide active" style="background-image: url('https://source.unsplash.com/random/1600x900?face,technology');">
+                <div class="slide-content">
+                    <h2>Advanced Face Recognition</h2>
+                    <p>Our cutting-edge technology provides accurate and secure facial recognition for all your security needs.</p>
+                    <a href="#" class="btn">Get Started</a>
+                </div>
+            </div>
+            <!-- Slide 2 -->
+            <div class="slide" style="background-image: url('https://source.unsplash.com/random/1600x900?security,biometric');">
+                <div class="slide-content">
+                    <h2>Secure User Management</h2>
+                    <p>Easily add and manage users with our intuitive interface and robust security features.</p>
+                    <a href="#" class="btn">Learn More</a>
+                </div>
+            </div>
+            <!-- Slide 3 -->
+            <div class="slide" style="background-image: url('https://source.unsplash.com/random/1600x900?data,analytics');">
+                <div class="slide-content">
+                    <h2>Comprehensive History</h2>
+                    <p>Track and analyze all recognition events with our detailed history and reporting system.</p>
+                    <a href="#" class="btn">View Demo</a>
+                </div>
+            </div>
+        </div>
+        <div class="carousel-nav">
+            <div class="carousel-indicator active"></div>
+            <div class="carousel-indicator"></div>
+            <div class="carousel-indicator"></div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about">
+        <div class="section-title">
+            <h2>About Our Technology</h2>
+        </div>
+        <div class="about-content">
+            <div class="about-text">
+                <p>Our face recognition system leverages state-of-the-art artificial intelligence to deliver unmatched accuracy and performance. Designed for both security professionals and businesses, our solution provides real-time identification with industry-leading precision.</p>
+                <p>With features like live detection, user management, and comprehensive history logging, you get a complete package that adapts to your specific needs while maintaining the highest security standards.</p>
+                <div class="features">
+                    <div class="feature">
+                        <i class="fas fa-bolt"></i>
+                        <h3>Fast Processing</h3>
+                        <p>Real-time recognition with sub-second response times</p>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-lock"></i>
+                        <h3>Secure</h3>
+                        <p>Enterprise-grade encryption and data protection</p>
+                    </div>
+                </div>
+            </div>
+            <div class="about-image">
+                <img src="https://source.unsplash.com/random/600x400?technology,ai" alt="Face Recognition Technology">
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2023 RecognitionPro. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Mobile menu toggle
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+
+        hamburger.addEventListener('click', function() {
+            navLinks.classList.toggle('active');
+        });
+
+        // Close mobile menu when clicking a link
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+            });
+        });
+
+        // Carousel functionality
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const indicators = document.querySelectorAll('.carousel-indicator');
+
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            indicators.forEach(indicator => indicator.classList.remove('active'));
+            
+            slides[index].classList.add('active');
+            indicators[index].classList.add('active');
+            currentSlide = index;
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % slides.length;
+            showSlide(currentSlide);
+        }
+
+        // Set up indicators
+        indicators.forEach((indicator, index) => {
+            indicator.addEventListener('click', () => showSlide(index));
+        });
+
+        // Auto-advance slides every 5 seconds
+        setInterval(nextSlide, 5000);
+    </script>
+</body>
+</html>

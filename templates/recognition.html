@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Recognition - RecognitionPro</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --transition-speed: 0.3s;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f9f9f9;
+            overflow-x: hidden;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .navbar.scrolled {
+            padding: 0.5rem 2rem;
+            background-color: rgba(44, 62, 80, 0.95);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .logo i {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-left: 2rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            transition: all var(--transition-speed) ease;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+        }
+
+        .nav-links a:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .nav-links i {
+            margin-right: 8px;
+            font-size: 1.1rem;
+        }
+
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-top: 80px;
+            padding: 2rem;
+            min-height: calc(100vh - 160px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        /* Recognition Section */
+        .recognition-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 800px;
+            transform: translateY(20px);
+            opacity: 0;
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        .section-header {
+            margin-bottom: 2rem;
+        }
+
+        .section-header h2 {
+            color: var(--secondary-color);
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-header h2::after {
+            content: '';
+            position: absolute;
+            width: 50px;
+            height: 3px;
+            background-color: var(--primary-color);
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .section-header p {
+            color: #666;
+        }
+
+        /* Video Feed */
+        .video-container {
+            position: relative;
+            width: 100%;
+            max-width: 640px;
+            margin: 0 auto;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            background-color: #000;
+            display: none; /* Hidden by default */
+        }
+
+        #videoFeed {
+            width: 100%;
+            display: block;
+        }
+
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            opacity: 0;
+            transition: opacity var(--transition-speed) ease;
+        }
+
+        .video-container:hover .video-overlay {
+            opacity: 1;
+        }
+
+        /* Button Styles */
+        .btn {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all var(--transition-speed) ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            font-size: 1rem;
+            margin: 1rem 0;
+        }
+
+        .btn i {
+            margin-right: 8px;
+        }
+
+        .btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-stop {
+            background-color: var(--accent-color);
+            display: none; /* Hidden by default */
+        }
+
+        .btn-stop:hover {
+            background-color: #c0392b;
+        }
+
+        /* Results Display */
+        .results {
+            margin-top: 2rem;
+            padding: 1rem;
+            background-color: var(--light-color);
+            border-radius: 8px;
+            width: 100%;
+            max-width: 640px;
+            display: none; /* Hidden by default */
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .hamburger {
+                display: block;
+            }
+
+            .nav-links {
+                position: absolute;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background-color: var(--secondary-color);
+                flex-direction: column;
+                align-items: center;
+                padding: 1rem 0;
+                clip-path: circle(0px at 90% -10%);
+                transition: all 0.5s ease-out;
+            }
+
+            .nav-links.active {
+                clip-path: circle(1000px at 90% -10%);
+            }
+
+            .nav-links li {
+                margin: 1rem 0;
+            }
+
+            .main-content {
+                padding: 1rem;
+                margin-top: 70px;
+            }
+
+            .recognition-container {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .navbar {
+                padding: 1rem;
+            }
+
+            .logo {
+                font-size: 1.2rem;
+            }
+
+            .section-header h2 {
+                font-size: 1.5rem;
+            }
+        }
+
+        #map{ height: 300px; width: 400px; margin: 2px auto; border: 2px solid #ccc; }
+
+        /* Live status / temperature */
+        .live-status { margin-top: 1.5rem; padding: 1rem; border-radius: 8px; background: var(--light-color); display: none; }
+        .live-status .temp { font-size: 2.2rem; font-weight: 700; color: var(--accent-color); }
+        .live-status .who { font-size: 1.1rem; color: var(--secondary-color); }
+
+        /* Unknown person popup */
+        .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: none; align-items: center; justify-content: center; z-index: 2000; }
+        .modal-box { background: #fff; border-radius: 12px; padding: 2rem; width: 90%; max-width: 420px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .modal-box h3 { color: var(--accent-color); margin-bottom: 0.3rem; }
+        .modal-box p { color: #666; margin-bottom: 1rem; }
+        .modal-box .btn { display: block; width: 100%; margin: 0.5rem 0; }
+        .modal-box .btn-red { background-color: var(--accent-color); }
+        .modal-box .btn-red:hover { background-color: #c0392b; }
+        #cmdMsg { font-size: 0.9rem; color: #27ae60; min-height: 1.2rem; }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-user-shield"></i>
+            <span>RecognitionPro</span>
+        </div>
+        <div class="hamburger">
+            <i class="fas fa-bars"></i>
+        </div>
+        <ul class="nav-links">
+            <li><a href="/"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="/adduser"><i class="fas fa-user-plus"></i> Add User</a></li>
+            <li><a href="/recognition"><i class="fas fa-camera"></i> Face Recognition</a></li>
+            <li><a href="/history"><i class="fas fa-history"></i> History</a></li>
+        </ul>
+    </nav>
+
+    <div style="display: flex;">
+    <!-- Main Content -->
+    <div class="main-content" style="width: 100%;">
+        <div class="recognition-container">
+            <div class="section-header">
+                <h2>Face Recognition</h2>
+                <p>Click the button below to start real-time face recognition</p>
+            </div>
+
+            <button id="startRecognition" class="btn">
+                <i class="fas fa-camera"></i> Start Recognition
+            </button>
+
+            <button id="stopRecognition" class="btn btn-stop">
+                <i class="fas fa-stop"></i> Stop Recognition
+            </button>
+
+            <div class="video-container">
+                <img id="videoFeed" src="" alt="Video Feed">
+            </div>
+
+            <div class="live-status" id="liveStatus">
+                <div class="who" id="whoText">No face detected</div>
+                <div class="temp" id="tempText"></div>
+            </div>
+
+            <div class="results" id="recognitionResults">
+                <h3>Recognition Results</h3>
+                <div id="resultsContent"></div>
+            </div>
+        </div>
+    </div>
+
+</div>
+    <!-- Unknown person popup -->
+    <div class="modal-bg" id="unknownModal">
+        <div class="modal-box">
+            <h3><i class="fas fa-user-secret"></i> Unknown Person</h3>
+            <p>Select a mode manually</p>
+            <button class="btn" onclick="sendCmd('heater1')"><i class="fas fa-fire"></i> Heater 1</button>
+            <button class="btn" onclick="sendCmd('heater2')"><i class="fas fa-fire-flame-curved"></i> Heater 2</button>
+            <button class="btn" onclick="sendCmd('cooler')"><i class="fas fa-snowflake"></i> Cooler</button>
+            <button class="btn btn-red" onclick="sendCmd('stop')"><i class="fas fa-stop"></i> Stop</button>
+            <div id="cmdMsg"></div>
+        </div>
+    </div>
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Mobile menu toggle
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+
+        hamburger.addEventListener('click', function() {
+            navLinks.classList.toggle('active');
+        });
+
+        // Close mobile menu when clicking a link
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+            });
+        });
+
+        // Face Recognition Functionality
+        const startBtn = document.getElementById('startRecognition');
+        const stopBtn = document.getElementById('stopRecognition');
+        const videoContainer = document.querySelector('.video-container');
+        const videoFeed = document.getElementById('videoFeed');
+
+        startBtn.addEventListener('click', function() {
+            // Show video container and stop button
+            videoContainer.style.display = 'block';
+            stopBtn.style.display = 'inline-block';
+            startBtn.style.display = 'none';
+            // Start the video feed (this would connect to your Flask endpoint)
+            videoFeed.src = "http://127.0.0.1:5000/video_feed"; // Change to your Flask server address
+            startPolling();
+        });
+
+        stopBtn.addEventListener('click', function() {
+            // Stop the video feed
+            videoFeed.src = "";
+            stopPolling();
+            // Hide video container and show start button
+            videoContainer.style.display = 'none';
+            stopBtn.style.display = 'none';
+            startBtn.style.display = 'inline-block';
+            window.location.href = '/stop_feed';
+        });
+
+        // ---- Live status polling (temperature + unknown popup) ----
+        const liveStatus = document.getElementById('liveStatus');
+        const whoText = document.getElementById('whoText');
+        const tempText = document.getElementById('tempText');
+        const modal = document.getElementById('unknownModal');
+        const cmdMsg = document.getElementById('cmdMsg');
+        let pollTimer = null;
+        let notUnknownCount = 0;
+        let modalDismissed = false;
+
+        function startPolling() {
+            liveStatus.style.display = 'block';
+            if (pollTimer) return;
+            pollTimer = setInterval(async () => {
+                try {
+                    const r = await fetch('/status');
+                    const s = await r.json();
+                    if (s.state === 'known') {
+                        whoText.textContent = 'Welcome, ' + s.name;
+                        tempText.textContent = 'Temperature: ' + s.temp;
+                    } else if (s.state === 'unknown') {
+                        whoText.textContent = 'Unknown person detected';
+                        tempText.textContent = '';
+                    } else {
+                        whoText.textContent = 'No face detected';
+                        tempText.textContent = '';
+                    }
+                    if (s.state === 'unknown') {
+                        notUnknownCount = 0;
+                        if (!modalDismissed) modal.style.display = 'flex';
+                    } else {
+                        // hide only after a few consecutive non-unknown polls (avoids flicker)
+                        if (++notUnknownCount >= 3) {
+                            modal.style.display = 'none';
+                            modalDismissed = false;
+                            cmdMsg.textContent = '';
+                        }
+                    }
+                } catch (e) { /* ignore */ }
+            }, 1000);
+        }
+
+        function stopPolling() {
+            clearInterval(pollTimer);
+            pollTimer = null;
+            liveStatus.style.display = 'none';
+            modal.style.display = 'none';
+        }
+
+        async function sendCmd(cmd) {
+            try {
+                const r = await fetch('/send/' + cmd, { method: 'POST' });
+                const d = await r.json();
+                cmdMsg.textContent = d.ok ? 'Command sent: ' + d.sent : 'Failed to send';
+            } catch (e) {
+                cmdMsg.textContent = 'Failed to send';
+            }
+            setTimeout(() => { modal.style.display = 'none'; modalDismissed = true; }, 800);
+        }
+    </script>
+</body>
+</html>
